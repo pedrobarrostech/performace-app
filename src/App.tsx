@@ -1,24 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useMemo, useState } from "react";
+import { Item } from "./components/Item";
 
 function App() {
+  const [items, setItems] = useState<string[]>([])
+  const [wishlist, setWishlist] = useState<string[]>([])
+  const [newItem, setNewItem] = useState('')
+
+  function addItemToList() {
+    setItems([...items, `Item ${items.length}`])
+  }
+
+  const addItemToWishList = useCallback((item: string) => {
+    setWishlist(state => [...state, item])
+  }, [])
+
+  const countItemsWithOne = useMemo(() => {
+    console.log('countItemsWithOne')
+    return { count: items.filter(item => item.includes('1')).length }
+  }, [items]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Performance App</h1>
+      <div>
+        <input type="text" onChange={e => setNewItem(e.target.value)} value={newItem} />
+        <button onClick={addItemToList}>Add</button>
+        <ul>
+          {items.map(item => {
+            return <Item 
+                      key={item} 
+                      title={item} 
+                      onAddToWishlist={addItemToWishList} 
+                      countItemsWithOne={countItemsWithOne} 
+                    />
+          })}
+        </ul>
+      </div>
+      
     </div>
   );
 }
